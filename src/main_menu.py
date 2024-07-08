@@ -33,7 +33,7 @@ def handle_user_selection(lcd):
             lcd.lcd_display_string("2. 100 Plus", 2)
         selected_option = None  # Reset selected option after handling
 
-def main():
+def main_menu_flow():
     # Initialise LCD
     lcd = LCD.lcd()
     lcd.clear()
@@ -55,7 +55,3 @@ def main():
 
     # Main thread can continue to do other things, or just wait for user selection to be handled
     selection_thread.join()
-
-# Main entry potin
-if __name__ == "__main__":
-    main()
