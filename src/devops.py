@@ -52,18 +52,22 @@ def security():
                 lcd.lcd_display_string("Authorization", 1)
                 lcd.lcd_display_string("Granted", 2)
                 time.sleep(2)
-                ir_sensor = 0 
+                ir_sensor.turn_off()
                 time.sleep(2)
-                buzzer.turn_off
-
+                buzzer.turn_off()
+                servo.set_servo_position(90)
 
                 if (keyvalue == "*"):
-                    ir_sensor.turn_on = 1
+                    ir_sensor.turn_on()
                     time.sleep(2)
-                    buzzer.turn_on = 1
+                    buzzer.turn_on()
+                    servo.set_servo_position(90)
+    
+        return keyvalue
 
     if (ir_value == False):
         buzzer.beep(0.5, 0.5, 1)
+        return ir_value
 
 def main():
     security()    
