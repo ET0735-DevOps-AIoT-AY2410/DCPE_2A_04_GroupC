@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .hidden {
+            display: none;
+        }
+        .button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #cart {
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        let cart = [];
+
+        let prices = {
+            'Milo': 3.50,
+            '100 Plus': 7.00
+        };
+
+        let balance = 10.50;
+
+        function addToCart(item) {
+            cart.push(item);
+            document.getElementById('cart').innerText = 'Cart: ' + cart.join(', ');
+        }
+
+        function updateBalanceDisplay() {
+            document.getElementById('balance').innerText = 'Balance: $' + balance.toFixed(2);
+        }
+
+        function purchase() {
+            let totalCost = 0;
+            for (let i = 0; i < cart.length; i++) {
+                totalCost += prices[cart[i]];
+            }
+
+            if (totalCost > balance) {
+                alert("Insufficient balance!");
+                return;
+            }
+
+            balance -= totalCost;
+            updateBalanceDisplay();
+            document.getElementById('qr-img').classList.remove('hidden');
+        }
+
+        window.onload = function() {
+            updateBalanceDisplay();
+        };
+    </script>
+</head>
+<body>
+    <h1>Smart Vending Machine</h1>
+    <div>
+        <button class="button" onclick="addToCart('Milo')">Milo - $3.50</button>
+        <button class="button" onclick="addToCart('100 Plus')">100 Plus - $7.00</button>
+    </div>
+    <div id="cart">Cart: </div>
+    <div id="balance">Balance: $10.50</div>
+    <button class="button" onclick="purchase()">Purchase</button>
+    <div>
+        <img id="qr-img" src="qr-img.jpg" alt="QR Code" class="hidden">
+    </div>
+</body>
+</html>
