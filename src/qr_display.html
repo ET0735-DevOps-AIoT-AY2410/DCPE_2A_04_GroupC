@@ -7,6 +7,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin-top: 50px;
+            position: relative;
         }
         .hidden {
             display: none;
@@ -17,27 +18,58 @@
             font-size: 16px;
             cursor: pointer;
         }
+        .item-container {
+            display: inline-block;
+            text-align: center;
+        }
+        .item-img {
+            width: 100px;
+            height: 100px;
+            display: block;
+            margin: 0 auto 10px auto;
+        }
         #cart {
             margin-top: 20px;
+        }
+        #add-balance {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        #pay-qr {
+            position: absolute;
+            top: 20px;
+            left: 20px;
         }
     </style>
     <script>
         let cart = [];
 
-        let prices = {
+        const prices = {
             'Milo': 3.50,
             '100 Plus': 7.00
         };
 
-        let balance = 10.50;
+        function getBalance() {
+            return parseFloat(localStorage.getItem('balance')) || 0.00;
+        }
+
+        function setBalance(balance) {
+            localStorage.setItem('balance', balance.toFixed(2));
+        }
 
         function addToCart(item) {
             cart.push(item);
             document.getElementById('cart').innerText = 'Cart: ' + cart.join(', ');
         }
 
+        function clearCart() {
+            cart = [];
+            document.getElementById('cart').innerText = 'Cart: ';
+        }
+
         function updateBalanceDisplay() {
-            document.getElementById('balance').innerText = 'Balance: $' + balance.toFixed(2);
+            document.getElementById('balance').innerText = 'Balance: $' + getBalance().toFixed(2);
         }
 
         function purchase() {
@@ -46,12 +78,15 @@
                 totalCost += prices[cart[i]];
             }
 
+            let balance = getBalance();
+
             if (totalCost > balance) {
                 alert("Insufficient balance!");
                 return;
             }
 
             balance -= totalCost;
+            setBalance(balance);
             updateBalanceDisplay();
             document.getElementById('qr-img').classList.remove('hidden');
         }
@@ -62,14 +97,21 @@
     </script>
 </head>
 <body>
+    <button id="add-balance" class="button" onclick="window.location.href='add_balance.html'">Add Balance</button>
+    <button id="pay-qr" class="button" onclick="window.location.href='qr_payment.html'">Pay using QR code</button>
     <h1>Smart Vending Machine</h1>
-    <div>
+    <div class="item-container">
+        <img src="milo.jpg" alt="Milo" class="item-img">
         <button class="button" onclick="addToCart('Milo')">Milo - $3.50</button>
+    </div>
+    <div class="item-container">
+        <img src="100plus.jpg" alt="100 Plus" class="item-img">
         <button class="button" onclick="addToCart('100 Plus')">100 Plus - $7.00</button>
     </div>
     <div id="cart">Cart: </div>
-    <div id="balance">Balance: $10.50</div>
+    <div id="balance">Balance: $0.00</div>
     <button class="button" onclick="purchase()">Purchase</button>
+    <button class="button" onclick="clearCart()">Clear Cart</button>
     <div>
         <img id="qr-img" src="qr-img.jpg" alt="QR Code" class="hidden">
     </div>
