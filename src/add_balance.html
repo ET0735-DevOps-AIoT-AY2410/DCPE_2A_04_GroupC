@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Balance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function getBalance() {
+            return parseFloat(localStorage.getItem('balance')) || 0.00;
+        }
+
+        function setBalance(balance) {
+            localStorage.setItem('balance', balance.toFixed(2));
+        }
+
+        function updateBalanceDisplay() {
+            document.getElementById('balance').innerText = 'Balance: $' + getBalance().toFixed(2);
+        }
+
+        function addBalance(amount) {
+            let balance = getBalance();
+            balance += amount;
+            setBalance(balance);
+            updateBalanceDisplay();
+        }
+
+        window.onload = function() {
+            updateBalanceDisplay();
+        };
+    </script>
+</head>
+<body>
+    <h1>Add Balance</h1>
+    <div id="balance">Balance: $0.00</div>
+    <div>
+        <button class="button" onclick="addBalance(5)">Add $5</button>
+        <button class="button" onclick="addBalance(10)">Add $10</button>
+        <button class="button" onclick="addBalance(20)">Add $20</button>
+    </div>
+    <div>
+        <button class="button" onclick="window.location.href='qr_display.html'">Back to Vending Machine</button>
+    </div>
+</body>
+</html>
