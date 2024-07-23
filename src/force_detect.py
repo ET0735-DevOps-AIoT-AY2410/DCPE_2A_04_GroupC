@@ -3,11 +3,12 @@ from threading import Thread
 from hal import hal_accelerometer as acc
 from hal import hal_buzzer as buzz
 
-buzz.init()
-acc.init()
-acc.ADXL345().calibrate()
+
 
 def start(self):
+    buzz.init()
+    acc.init()
+    acc.ADXL345().calibrate()
     # Start monitoring the accelerometer in a seperate thread
     acc_thread = Thread(target=monitor_accelerometer, args=acc)
     acc_thread.start()
