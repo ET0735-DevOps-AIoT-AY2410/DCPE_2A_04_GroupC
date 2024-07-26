@@ -20,6 +20,6 @@ def monitor_accelerometer(acc):
         x, y, z = acc.get_3_axis()
         total_g = (x**2 + y**2 + z**2)**0.5
         if total_g > 20:    # 20g threshold
-            buzz.turn_on_with_timer(200)
+            buzz.beep(200, 200, 3)
 
         time.sleep(0.1) # reduce the number of checks
