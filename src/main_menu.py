@@ -8,6 +8,8 @@ import time
 lcd = LCD.lcd()
 lcd.lcd_clear()
 
+testValue = 0
+
 # Empty list to store sequence of keypad presses
 password = []
 selected_option = None  # Variable to store the selected option
@@ -25,17 +27,18 @@ def display_menu(lcd):
     lcd.lcd_display_string("1. Collect Drink", 1, 0)
     lcd.lcd_display_string("2. Purchase", 2, 0)
 
-def handle_user_selection(lcd):
-    global selected_option
+def handle_user_selection(selected_option):
     while True:
         if selected_option == '1':
-            lcd.lcd_()
+            lcd.lcd_clear()
             lcd.lcd_display_string("Face QR Code", 1, 0)
             lcd.lcd_display_string("towards camera", 2, 0)
+            testValue = 3
         elif selected_option == '2':
-            lcd.lcd_()
+            lcd.lcd_clear()
             lcd.lcd_display_string("1. Milo", 1, 0)
             lcd.lcd_display_string("2. 100 Plus", 2, 0)
+            testValue = 2
         selected_option = None  # Reset selected option after handling
 
 def main_menu_flow():
@@ -52,7 +55,7 @@ def main_menu_flow():
     display_menu(lcd)
 
     # Start a thread to handle user selection
-    selection_thread = Thread(target=handle_user_selection, args=(lcd))
+    selection_thread = Thread(target=handle_user_selection, args=(selected_option))
     selection_thread.start()
 
     # Main thread can continue to do other things, or just wait for user selection to be handled

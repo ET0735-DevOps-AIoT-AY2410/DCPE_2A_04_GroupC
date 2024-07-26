@@ -7,6 +7,8 @@ buzz.init()
 acc.init()
 acc.ADXL345().calibrate()
 
+test_value = 0
+
 def start(self):
     # Start monitoring the accelerometer in a seperate thread
     acc_thread = Thread(target=monitor_accelerometer, args=acc)
@@ -20,5 +22,6 @@ def monitor_accelerometer(total_g):
         total_g = (x**2 + y**2 + z**2)**0.5
         if total_g > 20:    # 20g threshold
             buzz.beep(200, 200, 3)
+            test_value = 3
 
         time.sleep(0.1) # reduce the number of checks
