@@ -14,7 +14,7 @@ def start(self):
 
     acc_thread.join()
     
-def monitor_accelerometer(acc):
+def monitor_accelerometer(total_g):
     while True:
         x, y, z = acc.get_3_axis()
         total_g = (x**2 + y**2 + z**2)**0.5
