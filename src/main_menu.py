@@ -40,7 +40,6 @@ def handle_user_selection(lcd):
 
 def main_menu_flow():
     
-
     # Display something on LCD
     lcd.lcd_display_string("Welcome!", 1, 0)
     time.sleep(2)   # Display for 2 seconds
