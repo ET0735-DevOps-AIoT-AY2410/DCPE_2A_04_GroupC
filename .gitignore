@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 src/__pycache__
 src/hal/__pycache__
 /.vscode
 __pycache__/
 __pycache__
 venv
+=======
+src/__pycache__/
+src/hal/__pycache__/
+/.vscodegit
+/.vscode
+>>>>>>> renzo
