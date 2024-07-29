@@ -44,11 +44,18 @@ def security():
     lcd = LCD.lcd()
     lcd.lcd_clear()
 
-    keyvalue = shared_keypad_queue.get()
-    ir_value = ir_sensor.get_ir_sensor_state()
-    if(keyvalue == 5): 
-        if (keyvalue == 6):
-            if (keyvalue == 7):
+    correct_sequence = [5, 6, 7]
+    entered_sequence = []
+    
+    while True:
+        if not shared_keypad_queue.empty():
+            keyvalue = shared_keypad_queue.get()
+            entered_sequence.append(keyvalue)
+            
+            if len(entered_sequence) > len(correct_sequence):
+                entered_sequence.pop(0)
+            
+            if entered_sequence == correct_sequence:
                 lcd.lcd_display_string("Authorization", 1)
                 lcd.lcd_display_string("Granted", 2)
                 time.sleep(2)
@@ -56,24 +63,22 @@ def security():
                 time.sleep(2)
                 buzzer.turn_off()
                 servo.set_servo_position(90)
+                entered_sequence.clear()
+            
+            if keyvalue == ord('*'):
+                ir_sensor.turn_on()
+                time.sleep(2)
+                buzzer.turn_on()
+                servo.set_servo_position(0)
+                entered_sequence.clear()
 
-                if (keyvalue == "*"):
-                    ir_sensor.turn_on()
-                    time.sleep(2)
-                    buzzer.turn_on()
-                    servo.set_servo_position(90)
-    
-        return keyvalue
-
-    if (ir_value == False):
-        buzzer.beep(0.5, 0.5, 1)
-        return ir_value
-
-def main():
-    security()    
+        ir_value = ir_sensor.get_ir_sensor_state()
+        if (ir_value == False):
+            buzzer.beep(0.5, 0.5, 1)
+            return ir_value
 
 if __name__ == "__main__":
-    main()  
+    security()
 
 
     
