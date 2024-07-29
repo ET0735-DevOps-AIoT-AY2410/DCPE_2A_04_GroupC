@@ -1,45 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Display</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
             text-align: center;
-            margin-top: 50px;
-            position: relative;
+            margin: 0;
+            padding: 20px;
         }
-        .hidden {
-            display: none;
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
         }
         .button {
-            margin: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #0056b3;
         }
         .item-container {
             display: inline-block;
+            margin: 20px;
             text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .item-img {
             width: 100px;
             height: 100px;
             display: block;
             margin: 0 auto 10px auto;
+            border-radius: 10px;
         }
-        #cart {
+        #cart, #balance {
+            font-size: 18px;
             margin-top: 20px;
         }
-        #add-balance {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-        #pay-qr {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+        #qr-img {
+            margin-top: 10px;
+            display: none;
+            width: 200px;
+            height: 200px;
         }
     </style>
     <script>
@@ -88,7 +105,7 @@
             balance -= totalCost;
             setBalance(balance);
             updateBalanceDisplay();
-            document.getElementById('qr-img').classList.remove('hidden');
+            document.getElementById('qr-img').style.display = 'block';
         }
 
         window.onload = function() {
@@ -97,23 +114,27 @@
     </script>
 </head>
 <body>
-    <button id="add-balance" class="button" onclick="window.location.href='add_balance.html'">Add Balance</button>
-    <button id="pay-qr" class="button" onclick="window.location.href='qr_payment.html'">Pay using QR code</button>
-    <h1>Smart Vending Machine</h1>
-    <div class="item-container">
-        <img src="milo.jpg" alt="Milo" class="item-img">
-        <button class="button" onclick="addToCart('Milo')">Milo - $3.50</button>
-    </div>
-    <div class="item-container">
-        <img src="100plus.jpg" alt="100 Plus" class="item-img">
-        <button class="button" onclick="addToCart('100 Plus')">100 Plus - $7.00</button>
-    </div>
-    <div id="cart">Cart: </div>
-    <div id="balance">Balance: $0.00</div>
-    <button class="button" onclick="purchase()">Purchase</button>
-    <button class="button" onclick="clearCart()">Clear Cart</button>
-    <div>
-        <img id="qr-img" src="qr-img.jpg" alt="QR Code" class="hidden">
-    </div>
+    <header>
+        <button id="add-balance" class="button" onclick="window.location.href='add_balance.html'">Add Balance</button>
+        <h1>Smart Vending Machine</h1>
+        <button id="pay-qr" class="button" onclick="window.location.href='qr_payment.html'">Pay Using QR Code</button>
+    </header>
+    <main>
+        <div class="item-container">
+            <img src="milo.jpg" alt="Milo" class="item-img">
+            <button class="button" onclick="addToCart('Milo')">Milo - $3.50</button>
+        </div>
+        <div class="item-container">
+            <img src="100plus.jpg" alt="100 Plus" class="item-img">
+            <button class="button" onclick="addToCart('100 Plus')">100 Plus - $7.00</button>
+        </div>
+        <div id="cart">Cart: </div>
+        <div id="balance">Balance: $0.00</div>
+        <button class="button" onclick="purchase()">Purchase</button>
+        <button class="button" onclick="clearCart()">Clear Cart</button>
+        <div>
+            <img id="qr-img" src="qr-img.jpg" alt="QR Code">
+        </div>
+    </main>
 </body>
 </html>
