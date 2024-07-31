@@ -4,63 +4,53 @@ from hal import hal_lcd as LCD
 import time
 import queue
 
+# Initialize LCD
 lcd = LCD.lcd()
 lcd.lcd_clear()
 
-testValue = 0
+# Create a shared queue for keypad input
 shared_keypad_queue = queue.Queue()
-selected_option = None
 
+# Callback function invoked when any key on keypad is pressed
 def key_pressed(key):
-    shared_keypad_queue.put()
+    shared_keypad_queue.put(key)
 
+# Function to display the main menu on the LCD
 def display_menu():
     lcd.lcd_clear()
     lcd.lcd_display_string("1. Collect Drink", 1, 0)
     lcd.lcd_display_string("2. Purchase", 2, 0)
 
+# Function to handle user selection based on keypad input
 def handle_user_selection():
-    global selected_option, testValue
-    if selected_option is not None:
-        print(f"Handling selection: {selected_option}")
-        if selected_option == '1':
-            lcd.lcd_clear()
-            lcd.lcd_display_string("Face QR Code", 1, 0)
-            lcd.lcd_display_string("towards camera", 2, 0)
-            testValue = 3
-        elif selected_option == '2':
-            lcd.lcd_clear()
-            lcd.lcd_display_string("1. Milo", 1, 0)
-            lcd.lcd_display_string("2. 100 Plus", 2, 0)
-            testValue = 2
-        selected_option = None
-    time.sleep(0.1)
+    keyvalue = shared_keypad_queue.get()
+    print(f"Key value: {keyvalue}")
+
+    if (keyvalue == 1):
+        lcd.lcd_clear()
+        lcd.lcd_display_string("Face QR Code", 1, 0)
+        lcd.lcd_display_string("towards camera", 2, 0)
+    elif (keyvalue == 2):
+        lcd.lcd_clear()
+        lcd.lcd_display_string("1. Milo", 1, 0)
+        lcd.lcd_display_string("2. 100 Plus", 2, 0)
+        
+    time.sleep(2)  # Delay for readability
 
 def main_menu_flow():
 
-    # Initialisation of HAL modules
-    lcd = LCD.lcd()
-    lcd.lcd_clear()
-
+    # Initialize the HAL keypad driver
     keypad.init(key_pressed)
+
+    # Start a thread to handle keypad input
     keypad_thread = Thread(target=keypad.get_key)
     keypad_thread.start()
 
-    # Run monitor_keypad in the main thread
-    keypad.init(key_pressed)
-    keypad_thread = Thread(target=keypad.get_key)
-    keypad_thread.start()
-
-    # Start a thread to handle user selection
-    selection_thread = Thread(target=handle_user_selection)
-    selection_thread.start()
-    
     while True:
-        print("key value ", selected_option)
-
+        # Handle user selection in the main thread
         display_menu()
         handle_user_selection()
-
+        time.sleep(1)
 
 if __name__ == "__main__":
     main_menu_flow()
