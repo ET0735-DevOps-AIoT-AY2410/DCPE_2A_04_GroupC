@@ -38,26 +38,21 @@ def handle_user_selection():
             selected_option = None
         time.sleep(0.1)
 
-def monitor_keypad():
-    keypad.init(key_pressed)
-    keypad.get_key()
-
 def main_menu_flow():
-    try:    
-        display_menu()
+    display_menu()
         
-        # Run monitor_keypad in the main thread
-        monitor_keypad()
+    # Run monitor_keypad in the main thread
+    keypad.init(key_pressed)
+    keypad_thread = Thread(target=keypad.get_key)
+    keypad_thread.start()
 
-        # Start a thread to handle user selection
-        selection_thread = Thread(target=handle_user_selection)
-        selection_thread.start()
+    # Start a thread to handle user selection
+    selection_thread = Thread(target=handle_user_selection)
+    selection_thread.start()
 
-        # Main thread can continue to do other things, or just wait for user selection to be handled
-        selection_thread.join()
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    # Main thread can continue to do other things, or just wait for user selection to be handled
+    selection_thread.join()
+    keypad_thread.join()
 
 if __name__ == "__main__":
     main_menu_flow()

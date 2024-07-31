@@ -1,4 +1,10 @@
+# Ignore all __pycache__ directories
+**/__pycache__/
+
+# Specific ignores
 src/__pycache__/
 src/hal/__pycache__/
+
+# Ignore the VS Code settings directory
 /.vscodegit
 /.vscode
