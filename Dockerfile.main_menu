@@ -1,0 +1,17 @@
+# Use a base image compatible with Raspberry Pi
+FROM balenalib/raspberrypi3-python:3.9
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements and install them
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy your application code
+COPY main_menu.py .
+COPY hal/ ./hal/
+
+# Command to run your application
+CMD ["python", "main_menu.py"]
