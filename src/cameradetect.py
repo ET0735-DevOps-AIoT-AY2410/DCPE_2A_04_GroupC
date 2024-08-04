@@ -1,9 +1,9 @@
 import time
 from PIL import Image, ImageDraw, ImageFont
 from pyzbar.pyzbar import decode
-import RPi.GPIO as GPIO
+from hal import hal_dc_motor as dc_motor
+from hal import hal_servo as servo
 from time import sleep
-import qr_code_data
 
 # Paths to the images
 payment_reference_image_path = r"/home/pi/ET0735/CA/src/qr-pay.jpg"
@@ -51,18 +51,17 @@ def activate_camera(image_path):
 
 def dispense_drink():
     print("Starting DC motor...")
-    init_motor()
-    set_motor_speed(50)   # Set motor speed to 50%
-    sleep(5)              # Run motor for 5 seconds
-    stop_motor()
+    dc_motor.init()
+    dc_motor.set_motor_speed(50)  # Set motor speed to 50%
+    sleep(5)  # Run motor for 5 seconds
+    dc_motor.set_motor_speed(0)
 
     print("Dispensing purchased drink with servo...")
-    init_servo()
-    set_servo_position(0)   # Move servo to 0 degrees
-    sleep(2)                # Wait for 2 seconds
-    set_servo_position(180) # Move servo to 180 degrees
-    sleep(2)                # Wait for 2 seconds
-    cleanup_servo()
+    servo.init()
+    servo.set_servo_position(0)  # Move servo to 0 degrees
+    sleep(2)  # Wait for 2 seconds
+    servo.set_servo_position(180)  # Move servo to 180 degrees
+    sleep(2)  # Wait for 2 seconds
 
 def qr_code_detection(scan_image_path, font_path, reference_code):
     try:
@@ -118,48 +117,11 @@ def main():
         activate_camera(scan_image_path)
         if qr_code_detection(scan_image_path, font_path, collection_reference_code):
             print("Collection QR code valid. Ready for the next step.")
+            pay_dispense(pay_image_path, font_path, collection_reference_code)
         else:
             print("Collection QR code invalid. Please try again.")
     else:
         print("Unable to extract QR code data from collection reference image.")
-
-# DC Motor functions
-def init_motor():
-    global PWM
-    GPIO.setmode(GPIO.BCM)  # choose BCM mode
-    GPIO.setwarnings(False)
-    GPIO.setup(23, GPIO.OUT)  # set GPIO 23 as output
-
-    # Configure GPIO pin 23 as PWM, frequency = 120Hz
-    PWM = GPIO.PWM(23, 120)
-
-def set_motor_speed(speed):
-    if 0 <= speed <= 100:
-        PWM.start(speed)
-
-def stop_motor():
-    PWM.stop()
-    GPIO.cleanup(23)  # cleanup GPIO pin 23 only
-
-# Servo motor functions
-def init_servo():
-    GPIO.setmode(GPIO.BCM)  # choose BCM mode
-    GPIO.setwarnings(False)
-    GPIO.setup(26, GPIO.OUT)  # set GPIO 26 as output
-
-def set_servo_position(position):
-    PWM_servo = GPIO.PWM(26, 50)  # set 50Hz PWM output at GPIO26
-
-    duty_cycle = (-10 * position) / 180 + 12
-
-    print("Setting servo position to " + str(position) + " degrees (Duty cycle: " + str(duty_cycle) + "%)")
-
-    PWM_servo.start(duty_cycle)
-    sleep(0.5)
-    PWM_servo.stop()
-
-def cleanup_servo():
-    GPIO.cleanup(26)  # cleanup GPIO pin 26 only
 
 def pay_dispense(pay_image_path, font_path, payment_reference_code):
     activate_camera(pay_image_path)
