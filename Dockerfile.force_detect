@@ -1,5 +1,5 @@
 # Use a base image compatible with Raspberry Pi
-FROM balenalib/raspberrypi3-python:3.9
+FROM arm32v7/python:3
 
 # Set working directory
 WORKDIR /app
@@ -8,10 +8,11 @@ WORKDIR /app
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir smbus
 
 # Copy your application code
-COPY force_detect.py .
-COPY hal/ ./hal/
+COPY src/force_detect.py .
+COPY src/hal ./hal/
 
 # Command to run your application
 CMD ["python", "force_detect.py"]

@@ -52,7 +52,7 @@ def main():
     lcd.lcd_clear()
 
     lcd.lcd_display_string("Mini-Project", 1)
-    lcd.lcd_display_string("Dignostic Tests", 2)
+    lcd.lcd_display_string("Diagnostic Tests", 2)
 
     time.sleep(3)
 
