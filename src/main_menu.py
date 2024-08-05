@@ -25,7 +25,7 @@ def handle_user_selection(lcd):
         lcd.lcd_display_string("1. Milo", 1, 0)
         lcd.lcd_display_string("2. 100 Plus", 2, 0)
 
-    time.sleep(2)  # Delay for readability
+    time.sleep(10)  # Delay for readability
 
 def main_menu_flow(lcd, keypad):
 
@@ -40,7 +40,7 @@ def main_menu_flow(lcd, keypad):
         # Handle user selection in the main thread
         display_menu(lcd)
         handle_user_selection(lcd)
-        time.sleep(1)
+        time.sleep(0.5)
 
 if __name__ == "__main__":
     from hal import hal_keypad as keypad
