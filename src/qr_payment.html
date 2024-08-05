@@ -1,12 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Payment</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #333;
             text-align: center;
-            margin-top: 50px;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
         }
         .button {
             background-color: #007bff;
@@ -17,17 +26,41 @@
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s;
+            margin-top: 20px;
         }
         .button:hover {
             background-color: #0056b3;
         }
+        #qr-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #qr-img {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            margin-bottom: 40px;
+        }
+        #message {
+            font-size: 18px;
+            color: #555;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>QR Code Payment</h1>
-    <div>
-        <img src="qr-payment.jpg" alt="QR Code">
+    <div id="qr-container">
+        <h1>QR Code Payment</h1>
+        <img id="qr-img" src="qr-pay.jpg" alt="QR Code">
+        <div id="message">Scan this QR Code at the Machine to pay</div>
+        <button class="button" onclick="window.location.href='main_page.html'">Back to Vending Machine</button>
     </div>
-    <button class="button" onclick="window.location.href='qr_display.html'">Back to Vending Machine</button>
 </body>
 </html>

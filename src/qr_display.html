@@ -7,17 +7,34 @@
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f4f4f9;
             color: #333;
             text-align: center;
             margin: 0;
             padding: 20px;
-        }
-        header {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            margin-bottom: 40px;
+            height: 100vh;
+            flex-direction: column;
+        }
+        #qr-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #qr-img {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+        #message {
+            font-size: 18px;
+            color: #555;
+            margin-top: 10px;
         }
         .button {
             background-color: #007bff;
@@ -28,113 +45,18 @@
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s;
+            margin-top: 20px;
         }
         .button:hover {
             background-color: #0056b3;
         }
-        .item-container {
-            display: inline-block;
-            margin: 20px;
-            text-align: center;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .item-img {
-            width: 100px;
-            height: 100px;
-            display: block;
-            margin: 0 auto 10px auto;
-            border-radius: 10px;
-        }
-        #cart, #balance {
-            font-size: 18px;
-            margin-top: 20px;
-        }
-        #qr-img {
-            margin-top: 10px;
-            display: none;
-            width: 200px;
-            height: 200px;
-        }
     </style>
-    <script>
-        let cart = [];
-
-        const prices = {
-            'Milo': 3.50,
-            '100 Plus': 7.00
-        };
-
-        function getBalance() {
-            return parseFloat(localStorage.getItem('balance')) || 0.00;
-        }
-
-        function setBalance(balance) {
-            localStorage.setItem('balance', balance.toFixed(2));
-        }
-
-        function addToCart(item) {
-            cart.push(item);
-            document.getElementById('cart').innerText = 'Cart: ' + cart.join(', ');
-        }
-
-        function clearCart() {
-            cart = [];
-            document.getElementById('cart').innerText = 'Cart: ';
-        }
-
-        function updateBalanceDisplay() {
-            document.getElementById('balance').innerText = 'Balance: $' + getBalance().toFixed(2);
-        }
-
-        function purchase() {
-            let totalCost = 0;
-            for (let i = 0; i < cart.length; i++) {
-                totalCost += prices[cart[i]];
-            }
-
-            let balance = getBalance();
-
-            if (totalCost > balance) {
-                alert("Insufficient balance!");
-                return;
-            }
-
-            balance -= totalCost;
-            setBalance(balance);
-            updateBalanceDisplay();
-            document.getElementById('qr-img').style.display = 'block';
-        }
-
-        window.onload = function() {
-            updateBalanceDisplay();
-        };
-    </script>
 </head>
 <body>
-    <header>
-        <button id="add-balance" class="button" onclick="window.location.href='add_balance.html'">Add Balance</button>
-        <h1>Smart Vending Machine</h1>
-        <button id="pay-qr" class="button" onclick="window.location.href='qr_payment.html'">Pay Using QR Code</button>
-    </header>
-    <main>
-        <div class="item-container">
-            <img src="milo.jpg" alt="Milo" class="item-img">
-            <button class="button" onclick="addToCart('Milo')">Milo - $3.50</button>
-        </div>
-        <div class="item-container">
-            <img src="100plus.jpg" alt="100 Plus" class="item-img">
-            <button class="button" onclick="addToCart('100 Plus')">100 Plus - $7.00</button>
-        </div>
-        <div id="cart">Cart: </div>
-        <div id="balance">Balance: $0.00</div>
-        <button class="button" onclick="purchase()">Purchase</button>
-        <button class="button" onclick="clearCart()">Clear Cart</button>
-        <div>
-            <img id="qr-img" src="qr-img.jpg" alt="QR Code">
-        </div>
-    </main>
+    <div id="qr-container">
+        <img id="qr-img" src="qr-img.jpg" alt="QR Code">
+        <div id="message"><b>Scan this QR Code at the Machine to collect your drink</b></div>
+        <button class="button" onclick="window.location.href='main_page.html'">Back to Home</button>
+    </div>
 </body>
 </html>
