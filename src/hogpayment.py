@@ -17,7 +17,7 @@ scan_image_path = r'/home/pi/ET0735/CA/src/scan.jpg'
 pay_image_path = r'/home/pi/ET0735/CA/src/pay.jpg'
 font_path = r"/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
-APPROVED_IDS = ["1234567890", "9876543210"]
+APPROVED_IDS = ["977573770339", "711535355173","910820273072"]
 
 def is_payment_successful(card_id):
     return card_id in APPROVED_IDS

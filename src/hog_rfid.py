@@ -3,7 +3,7 @@ from hal import hal_lcd as LCD
 from hal import hal_rfid_reader as rfid_reader
 import time 
 
-APPROVED_IDS = ["1234567890", "9876543210"]
+APPROVED_IDS = ["977573770339", "711535355173","910820273072"]
 
 def is_payment_successful(card_id):
     return card_id in APPROVED_IDS
