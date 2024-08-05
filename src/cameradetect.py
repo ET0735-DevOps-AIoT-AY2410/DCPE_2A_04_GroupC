@@ -149,6 +149,7 @@ def main():
             if qr_code_detection(scan_image_path, font_path, reference_codes):
                 lcd.lcd_clear()
                 lcd.lcd_display_string("Dispensing drink...", 1)
+                lcd.lcd_display_string("Please wait...", 2)
                 print("Valid QR code detected. Proceeding to dispense...")
                 pay_dispense(pay_image_path, font_path, reference_codes)
                 break
