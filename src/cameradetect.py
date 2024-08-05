@@ -1,34 +1,40 @@
 import time
 from PIL import Image, ImageDraw, ImageFont
 from pyzbar.pyzbar import decode
-import RPi.GPIO as GPIO
-from time import sleep
-import qr_code_data
+from picamera2 import Picamera2, Preview
+from hal import hal_lcd as LCD
+from hal import hal_dc_motor as dc_motor
+from hal import hal_servo as servo
 
 # Paths to the images
-payment_reference_image_path = r"/home/pi/ET0735/CA/src/qr-pay.jpg"
-collection_reference_image_path = r"/home/pi/ET0735/CA/src/qr-img.jpg"
 scan_image_path = r'/home/pi/ET0735/CA/src/scan.jpg'
-pay_image_path = r'/home/pi/ET0735/CA/src/qr-pay.jpg'
-# Path to the font
+pay_image_path = r'/home/pi/ET0735/CA/src/pay.jpg'
 font_path = r"/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+collection_reference_image_path = r"/home/pi/ET0735/CA/src/qr-img.jpg"
+payment_reference_image_path = r"/home/pi/ET0735/CA/src/qr-pay.jpg"
+
+lcd = LCD.lcd()
 
 def extract_qr_code_data(image_path):
     try:
+        print(f"Attempting to open image at: {image_path}")
         img = Image.open(image_path)
+        print(f"Image opened successfully. Size: {img.size}")
         decoded_objects = decode(img)
         if decoded_objects:
-            return decoded_objects[0].data.decode()  # Assuming the image contains one QR code
+            print(f"QR code detected in {image_path}")
+            return decoded_objects[0].data.decode()
         else:
-            print("No QR code detected in reference image.")
+            print(f"No QR code detected in reference image: {image_path}")
             return None
+    except FileNotFoundError:
+        print(f"Error: File not found at {image_path}")
+        return None
     except Exception as e:
-        print(f"Error extracting QR code data: {e}")
+        print(f"Error extracting QR code data from {image_path}: {e}")
         return None
 
 def activate_camera(image_path):
-    from picamera2 import Picamera2, Preview
-
     picam2 = Picamera2()
     camera_config = picam2.create_still_configuration(
         main={"size": (1920, 1080)},
@@ -51,20 +57,19 @@ def activate_camera(image_path):
 
 def dispense_drink():
     print("Starting DC motor...")
-    init_motor()
-    set_motor_speed(50)   # Set motor speed to 50%
-    sleep(5)              # Run motor for 5 seconds
-    stop_motor()
+    dc_motor.init()
+    dc_motor.set_motor_speed(50)  # Set motor speed to 50%
+    time.sleep(5)  # Run motor for 5 seconds
+    dc_motor.set_motor_speed(0)
 
     print("Dispensing purchased drink with servo...")
-    init_servo()
-    set_servo_position(0)   # Move servo to 0 degrees
-    sleep(2)                # Wait for 2 seconds
-    set_servo_position(180) # Move servo to 180 degrees
-    sleep(2)                # Wait for 2 seconds
-    cleanup_servo()
+    servo.init()
+    servo.set_servo_position(0)  # Move servo to 0 degrees
+    time.sleep(2)  # Wait for 2 seconds
+    servo.set_servo_position(180)  # Move servo to 180 degrees
+    time.sleep(2)  # Wait for 2 seconds
 
-def qr_code_detection(scan_image_path, font_path, reference_code):
+def qr_code_detection(scan_image_path, font_path, reference_codes):
     try:
         img = Image.open(scan_image_path)
         draw = ImageDraw.Draw(img)
@@ -95,7 +100,7 @@ def qr_code_detection(scan_image_path, font_path, reference_code):
             )
 
             data = d.data.decode()
-            if data == reference_code:
+            if data in reference_codes:
                 print(f"Valid QR Code Detected: {data}")
                 return True
             else:
@@ -112,62 +117,51 @@ def qr_code_detection(scan_image_path, font_path, reference_code):
         print(f"An unexpected error occurred: {e}")
         return False
 
-def main():
-    collection_reference_code = extract_qr_code_data(collection_reference_image_path)
-    if collection_reference_code:
-        activate_camera(scan_image_path)
-        if qr_code_detection(scan_image_path, font_path, collection_reference_code):
-            print("Collection QR code valid. Ready for the next step.")
-        else:
-            print("Collection QR code invalid. Please try again.")
-    else:
-        print("Unable to extract QR code data from collection reference image.")
-
-# DC Motor functions
-def init_motor():
-    global PWM
-    GPIO.setmode(GPIO.BCM)  # choose BCM mode
-    GPIO.setwarnings(False)
-    GPIO.setup(23, GPIO.OUT)  # set GPIO 23 as output
-
-    # Configure GPIO pin 23 as PWM, frequency = 120Hz
-    PWM = GPIO.PWM(23, 120)
-
-def set_motor_speed(speed):
-    if 0 <= speed <= 100:
-        PWM.start(speed)
-
-def stop_motor():
-    PWM.stop()
-    GPIO.cleanup(23)  # cleanup GPIO pin 23 only
-
-# Servo motor functions
-def init_servo():
-    GPIO.setmode(GPIO.BCM)  # choose BCM mode
-    GPIO.setwarnings(False)
-    GPIO.setup(26, GPIO.OUT)  # set GPIO 26 as output
-
-def set_servo_position(position):
-    PWM_servo = GPIO.PWM(26, 50)  # set 50Hz PWM output at GPIO26
-
-    duty_cycle = (-10 * position) / 180 + 12
-
-    print("Setting servo position to " + str(position) + " degrees (Duty cycle: " + str(duty_cycle) + "%)")
-
-    PWM_servo.start(duty_cycle)
-    sleep(0.5)
-    PWM_servo.stop()
-
-def cleanup_servo():
-    GPIO.cleanup(26)  # cleanup GPIO pin 26 only
-
-def pay_dispense(pay_image_path, font_path, payment_reference_code):
+def pay_dispense(pay_image_path, font_path, reference_codes):
     activate_camera(pay_image_path)
-    if qr_code_detection(pay_image_path, font_path, payment_reference_code):
-        print("Payment QR code valid. Dispensing drink...")
+    if qr_code_detection(pay_image_path, font_path, reference_codes):
+        lcd.lcd_clear()
+        lcd.lcd_display_string("Dispensing drink...", 1)
+        print("Valid QR code detected. Dispensing drink...")
         dispense_drink()
     else:
-        print("Payment QR code invalid. Please try again.")
+        lcd.lcd_clear()
+        lcd.lcd_display_string("Invalid QR code", 1)
+        print("Invalid QR code. Please try again.")
+
+def main():
+    print("Starting main function")
+    lcd.lcd_clear()
+    lcd.lcd_display_string("Initializing...", 1)
+
+    collection_reference_code = extract_qr_code_data(collection_reference_image_path)
+    print(f"Collection reference code: {collection_reference_code}")
+    payment_reference_code = extract_qr_code_data(payment_reference_image_path)
+    print(f"Payment reference code: {payment_reference_code}")
+
+    if collection_reference_code and payment_reference_code:
+        reference_codes = [collection_reference_code, payment_reference_code]
+        
+        while True:
+            lcd.lcd_clear()
+            lcd.lcd_display_string("Camera Activated", 1)
+            activate_camera(scan_image_path)
+            if qr_code_detection(scan_image_path, font_path, reference_codes):
+                lcd.lcd_clear()
+                lcd.lcd_display_string("Dispensing drink...", 1)
+                lcd.lcd_display_string("Please wait...", 2)
+                print("Valid QR code detected. Proceeding to dispense...")
+                pay_dispense(pay_image_path, font_path, reference_codes)
+                break
+            else:
+                lcd.lcd_clear()
+                lcd.lcd_display_string("Invalid QR Code", 1)
+                print("Invalid QR code. Please try again.")
+                time.sleep(2)  # Wait for 2 seconds before trying again
+    else:
+        lcd.lcd_clear()
+        lcd.lcd_display_string("QR Extraction Failed", 1)
+        print("Unable to extract QR code data from reference images.")
 
 if __name__ == '__main__':
     main()

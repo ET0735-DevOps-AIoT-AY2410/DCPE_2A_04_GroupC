@@ -1,27 +1,32 @@
 import time
 from threading import Thread
-from hal import hal_accelerometer as acc
-from hal import hal_buzzer as buzz
 
-buzz.init()
-acc.init()
-acc.ADXL345().calibrate()
-
-test_value = 0
-
-def start(self):
-    # Start monitoring the accelerometer in a seperate thread
-    acc_thread = Thread(target=monitor_accelerometer, args=acc)
+def start():
+    # Start monitoring the accelerometer in a separate thread
+    acc_thread = Thread(target=monitor_accelerometer)
     acc_thread.start()
 
-    acc_thread.join()
-    
-def monitor_accelerometer(total_g):
-    while True:
-        x, y, z = acc.ADXL345.get_3_axis()
-        total_g = (x**2 + y**2 + z**2)**0.5
-        if total_g > 20:    # 20g threshold
-            buzz.beep(200, 200, 3)
-            test_value = 3
+def monitor_accelerometer(simulated_data=None):
+    # Initialization of HAL modules
+    buzz.init()
+    accelerometer = acc.init()
 
-        time.sleep(0.1) # reduce the number of checks
+    while True:
+        if simulated_data is not None:
+            x, y, z = simulated_data  # Use simulated data if provided
+        else:
+            x, y, z = accelerometer.get_3_axis()
+
+        total_g = (x**2 + y**2 + z**2)**0.5
+        print(total_g)  # Debug statement
+
+        if total_g > 2.5:  # 2.5g threshold
+            buzz.beep(1, 1, 3)
+
+        time.sleep(0.2)  # Reduce the number of checks
+
+if __name__ == "__main__":
+    from hal import hal_accelerometer as acc
+    from hal import hal_buzzer as buzz
+    
+    monitor_accelerometer()
