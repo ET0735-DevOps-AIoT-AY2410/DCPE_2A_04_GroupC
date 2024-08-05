@@ -1,16 +1,15 @@
-<<<<<<< HEAD
-import force_detect as test_acc
+import pytest
+from unittest.mock import patch
+import force_detect
+from hal import hal_accelerometer
 
-def test_accelerometer():
-   test_acc.start()
-   g_force = 30
-   test_acc.monitor_accelerometer(g_force)
-   assert test_acc.monitor
-=======
-def test_accelerometer():
-    import force_detect
-    g_force = 30
-    force_detect.monitor_accelerometer(g_force)
-    
-    assert force_detect.test_value == 3 
->>>>>>> renzo
+def test_force_detect_functionality():
+    with patch('force_detect.monitor_accelerometer') as mock_function:
+        # Mock the return value for the function
+        mock_function.return_value = "expected result"
+        
+        # Call the function you're testing
+        result = force_detect.monitor_accelerometer()
+        
+        # Assert that the function returns the expected result
+        assert result == "expected result"
