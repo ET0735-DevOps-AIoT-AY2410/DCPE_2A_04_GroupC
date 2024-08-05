@@ -1,7 +1,5 @@
 import time
 from threading import Thread
-from hal import hal_accelerometer as acc
-from hal import hal_buzzer as buzz
 
 def start():
     # Start monitoring the accelerometer in a separate thread
@@ -28,4 +26,7 @@ def monitor_accelerometer(simulated_data=None):
         time.sleep(0.2)  # Reduce the number of checks
 
 if __name__ == "__main__":
+    from hal import hal_accelerometer as acc
+    from hal import hal_buzzer as buzz
+    
     monitor_accelerometer()
