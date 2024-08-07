@@ -16,7 +16,7 @@
     - User can select between Card or website payment.
     - __App payment__:
         - A QR Code generated from the website will be scanned by the Vending Machine to make payment.
-    -__Card payment__:
+    - __Card payment__:
         - The Vending Machine will scan the RFID card that the user is using.
 
 4. **Vending Machine Door**
