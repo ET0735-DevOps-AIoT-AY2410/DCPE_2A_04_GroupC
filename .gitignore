@@ -1,22 +1,12 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-src/__pycache__
-src/hal/__pycache__
-/.vscode
-__pycache__/
-__pycache__
-venv
-=======
-=======
+venv/
+
 # Ignore all __pycache__ directories
 **/__pycache__/
 
 # Specific ignores
->>>>>>> renzo
 src/__pycache__/
 src/hal/__pycache__/
 
 # Ignore the VS Code settings directory
 /.vscodegit
 /.vscode
->>>>>>> renzo
