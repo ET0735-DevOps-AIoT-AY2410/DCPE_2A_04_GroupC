@@ -2,6 +2,7 @@
 ## Smart Vending Machine
 ![alt text](https://github.com/ET0735-DevOps-AIoT-AY2410/DCPE_2A_04_GroupC/blob/master/src/vending_machine.png "Vending Machine Icon")
 
+
 ## Functional Requirements
 
 1. **Function Menu**:
@@ -26,15 +27,17 @@
 5. **Remote Services**
     - The user can pay and collect their drink using the website.
 
+
 ## Non-Functional Requirements
 
 1. **Power Management**:
     - When the Vending Machine is not interacted with for more than 1 minute, the Vending Machine will enter Low Power Mode. (i.e. LCD will turn off)
     - Whenever the user interacts with the Vending Machine (i.e. presses a key on the keypad), the Vending Machine will enter High Power Mode. (i.e. LCD will turn on)
 
+
 ## Contributors
 
-    - **Renzo Oracion Gandicela**
-    - **Er Zhong Xun Ervin**
-    - **Koh Jia Sheng**
-    - **Lee Hong Yi**
+    - Renzo Oracion Gandicela
+    - Er Zhong Xun Ervin
+    - Koh Jia Sheng
+    - Lee Hong Yi
