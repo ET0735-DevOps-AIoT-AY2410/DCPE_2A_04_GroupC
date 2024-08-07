@@ -37,7 +37,7 @@
 
 ## Contributors
 
-    - Renzo Oracion Gandicela
-    - Er Zhong Xun Ervin
-    - Koh Jia Sheng
-    - Lee Hong Yi
+- **Renzo Oracion Gandicela**
+- **Er Zhong Xun Ervin**
+- **Koh Jia Sheng**
+- **Lee Hong Yi**
