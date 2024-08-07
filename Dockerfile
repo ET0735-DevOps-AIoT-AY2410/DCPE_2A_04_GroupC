@@ -10,9 +10,13 @@ COPY hal ./hal
 # Copy the SPI driver for the RFID Reader
 COPY SPI-Py ./SPI-Py
 
+# Copy the requirements and install them
+COPY requirements.txt .
+
 # Install the required libraries 
 RUN pip3 install --no-cached-dir -r requirements.txt
 RUN pip3 install --no-cached-dir spidev
+RUN pip3 install --no-cache-dir smbus
 
 WORKDIR $SPI_PATH
 RUN python3 setup.py install
