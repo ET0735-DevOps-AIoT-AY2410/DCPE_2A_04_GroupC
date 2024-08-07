@@ -1,0 +1,2 @@
+RPi.GPIO==0.7.1 
+smbus==0.4.1    # Updated package for I2C
