@@ -1,12 +1,9 @@
-# Test_detect_door_open.py
-
-import pytest
 import queue
 import time
 from threading import Thread
 from unittest.mock import MagicMock, patch
 
-# Import the main function from the module
+# Import the main function and shared resources from the module
 from detect_door_open import security, shared_keypad_queue
 
 # Mock the hardware interaction modules
@@ -65,6 +62,3 @@ def test_security():
     mock_servo.set_servo_position.assert_any_call(0)
     mock_buzzer.beep.assert_called_with(1, 1, 3)
     mock_buzzer.turn_off.assert_called()
-
-if __name__ == '__main__':
-    pytest.main()
