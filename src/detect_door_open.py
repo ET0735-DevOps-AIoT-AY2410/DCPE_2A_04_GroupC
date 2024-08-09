@@ -3,7 +3,6 @@ from threading import Thread
 import queue
 
 from hal import hal_led as led
-from hal import hal_lcd as LCD
 from hal import hal_adc as adc
 from hal import hal_buzzer as buzzer
 from hal import hal_keypad as keypad
@@ -27,15 +26,12 @@ def security():
     keypad_thread = Thread(target=keypad.get_key)
     keypad_thread.start()
 
-    lcd = LCD.lcd()
-    lcd.lcd_clear()
-
     correct_sequence = [5, 6, 7]
     entered_sequence = []
     keyvalue = None
 
     while True:
-        lcd.lcd_display_string("Door Closed", 1)
+        print("Door Closed")
         if not shared_keypad_queue.empty():
             keyvalue = shared_keypad_queue.get()
             entered_sequence.append(keyvalue)
@@ -44,17 +40,14 @@ def security():
                 entered_sequence.pop(0)
 
             if entered_sequence == correct_sequence:
-                lcd.lcd_display_string("Authorization", 1)
-                lcd.lcd_display_string("Granted", 2)
+                print("Authorization Granted")
                 buzzer.turn_off()
                 servo.set_servo_position(90)
                 entered_sequence.clear()
                 time.sleep(2)
-                lcd.lcd_clear()
 
                 # Wait for '*' key to be pressed
-                lcd.lcd_display_string("Press '*' to", 1)
-                lcd.lcd_display_string("continue", 2)
+                print("Press '*' to continue")
                 while True:
                     if not shared_keypad_queue.empty():
                         keyvalue = shared_keypad_queue.get()
@@ -63,11 +56,9 @@ def security():
                             break  # Exit the loop if '*' is pressed
 
                 # After '*' is pressed
-                lcd.lcd_clear()
-                lcd.lcd_display_string("Continuing...", 1)
+                print("Continuing...")
                 time.sleep(2)
                 servo.set_servo_position(0)
-                lcd.lcd_clear()
 
         ir_value = ir_sensor.get_ir_sensor_state()
         if not ir_value and entered_sequence != correct_sequence:
