@@ -81,10 +81,6 @@ def handle_user_selection(lcd):
 
         time.sleep(0.1)  # Small delay to prevent CPU overutilization
 
-    # Ensure that the menu is re-displayed after a user selection
-    display_menu(lcd)
-    lcd_on_event.set()  # Keep the LCD on after menu is redisplayed
-
 # Function to manage the power state of the LCD
 def power_manage(lcd):
     while True:
@@ -100,7 +96,7 @@ def power_manage(lcd):
 
             # Wait until a key press is detected again
             while shared_keypad_queue.empty():
-                time.sleep(0.05)
+                time.sleep(0.03)
 
             print("Key pressed, waking up LCD.")  # Debug statement
             lcd.backlight(1)  # Turn the LCD backlight on
@@ -130,6 +126,9 @@ def main_menu_flow(lcd, keypad):
         # Display the main menu and wait for user selection
         display_menu(lcd)
         handle_user_selection(lcd)
+
+        # Ensure the LCD is on after handling user selection
+        lcd_on_event.set()
 
         # Pause the loop if the LCD is off
         while not lcd_on_event.is_set():
