@@ -9,11 +9,18 @@ from hal import hal_keypad as keypad
 from hal import hal_ir_sensor as ir_sensor
 from hal import hal_servo as servo
 
-# Empty list to store sequence of keypad presses
+# Queue to store sequence of keypad presses
 shared_keypad_queue = queue.Queue()
 
 def key_pressed(key):
     shared_keypad_queue.put(key)
+
+def ir_sensor_security(correct_sequence, entered_sequence):
+    while True:
+        ir_value = ir_sensor.get_ir_sensor_state()
+        if not ir_value and entered_sequence != correct_sequence:
+            buzzer.beep(1, 1, 3)  # Beep for 3 seconds continuously
+        time.sleep(0.1)
 
 def security():
     led.init()
@@ -29,6 +36,10 @@ def security():
     correct_sequence = [5, 6, 7]
     entered_sequence = []
     keyvalue = None
+
+    # Start IR sensor monitoring in a separate thread
+    ir_thread = Thread(target=ir_sensor_security, args=(correct_sequence, entered_sequence))
+    ir_thread.start()
 
     while True:
         print("Door Closed")
@@ -52,7 +63,7 @@ def security():
                     if not shared_keypad_queue.empty():
                         keyvalue = shared_keypad_queue.get()
                         print(f"Key pressed: {keyvalue}")  # Debug statement
-                        if (keyvalue == "*"):
+                        if keyvalue == "*":
                             break  # Exit the loop if '*' is pressed
 
                 # After '*' is pressed
@@ -60,12 +71,6 @@ def security():
                 time.sleep(2)
                 servo.set_servo_position(0)
 
-        ir_value = ir_sensor.get_ir_sensor_state()
-        if not ir_value and entered_sequence != correct_sequence:
-            buzzer.beep(1, 1, 3)  # Beep for 3 seconds continuously
-
         print(keyvalue)  # Debug statement to print key values
         time.sleep(0.1)
 
-if __name__ == "__main__    ":
-    security()
