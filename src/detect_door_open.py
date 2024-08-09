@@ -8,9 +8,13 @@ from hal import hal_buzzer as buzzer
 from hal import hal_keypad as keypad
 from hal import hal_ir_sensor as ir_sensor
 from hal import hal_servo as servo
+from hal import hal_lcd as LCD
 
 # Queue to store sequence of keypad presses
 shared_keypad_queue = queue.Queue()
+
+lcd = LCD.lcd()
+lcd.lcd_clear()
 
 def key_pressed(key):
     shared_keypad_queue.put(key)
@@ -42,7 +46,7 @@ def security():
     ir_thread.start()
 
     while True:
-        print("Door Closed")
+        lcd.lcd_display_string("Door Closed", 1)
         if not shared_keypad_queue.empty():
             keyvalue = shared_keypad_queue.get()
             entered_sequence.append(keyvalue)
@@ -51,14 +55,17 @@ def security():
                 entered_sequence.pop(0)
 
             if entered_sequence == correct_sequence:
-                print("Authorization Granted")
+                lcd.lcd_display_string("Authorization", 1, 0)
+                lcd.lcd_display_string("Granted", 2, 0)
                 buzzer.turn_off()
                 servo.set_servo_position(90)
                 entered_sequence.clear()
                 time.sleep(2)
+                lcd.lcd_clear()
 
                 # Wait for '*' key to be pressed
-                print("Press '*' to continue")
+                lcd.lcd_display_string("Press '*' to", 1, 0)
+                lcd.lcd_display_string("continue", 2, 0)
                 while True:
                     if not shared_keypad_queue.empty():
                         keyvalue = shared_keypad_queue.get()
@@ -67,10 +74,13 @@ def security():
                             break  # Exit the loop if '*' is pressed
 
                 # After '*' is pressed
-                print("Continuing...")
+                lcd.lcd_display_string("Continuing...", 1, 0)
                 time.sleep(2)
                 servo.set_servo_position(0)
+                lcd.lcd_clear()
 
         print(keyvalue)  # Debug statement to print key values
         time.sleep(0.1)
 
+if __name__ == "__main__":
+    security()
