@@ -1,5 +1,7 @@
 import time
 from threading import Thread
+from hal import hal_accelerometer as acc
+from hal import hal_buzzer as buzz
 
 def start():
     # Start monitoring the accelerometer in a separate thread
@@ -18,15 +20,13 @@ def monitor_accelerometer(simulated_data=None):
             x, y, z = accelerometer.get_3_axis()
 
         total_g = (x**2 + y**2 + z**2)**0.5
-        print(total_g)  # Debug statement
 
-        if total_g > 2.5:  # 2.5g threshold
+        if total_g > 2:  # 2g threshold
+            print("vending machine shook")
             buzz.beep(1, 1, 3)
 
         time.sleep(0.2)  # Reduce the number of checks
 
 if __name__ == "__main__":
-    from hal import hal_accelerometer as acc
-    from hal import hal_buzzer as buzz
     
     monitor_accelerometer()
