@@ -4,8 +4,8 @@ import qrcode
 import os
 
 # Define paths
-src_dir = "src"
-qr_image_path = os.path.join(src_dir, "qr-code.jpg")
+images_dir = "images"
+qr_image_path = os.path.join(images_dir, "qr-code.jpg")
 
 def qr_generate(image_path):
     qr_code_data = "1234"  # Fixed QR code data for testing
@@ -61,5 +61,8 @@ def qr_code_detection(image_path):
         return False
 
 if __name__ == '__main__':
+    # Ensure the images directory exists
+    os.makedirs(images_dir, exist_ok=True)
+
     qr_generate(qr_image_path)
     qr_code_detection(qr_image_path)
