@@ -1,4 +1,4 @@
-import hog_pay as RFID
+import hogpayment as RFID
 
 
 
