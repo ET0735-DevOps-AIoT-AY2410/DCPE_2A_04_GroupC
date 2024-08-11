@@ -4,7 +4,7 @@ import hog_rfid as RFID
 
 
 def test_is_payment_successful_approved():
-    card_id = "1234567890"
+    card_id = "977573770339"
     result = RFID.is_payment_successful(card_id)
     assert result == True  # Assert that the payment is successful for approved ID
 
