@@ -1,10 +1,10 @@
 import time
 from PIL import Image, ImageDraw, ImageFont
 from pyzbar.pyzbar import decode
-from picamera2 import Picamera2, Preview
 from hal import hal_lcd as LCD
 from hal import hal_dc_motor as dc_motor
 from hal import hal_servo as servo
+from camera_module import activate_camera
 
 # Paths to the images
 scan_image_path = r'/home/pi/ET0735/CA/src/scan.jpg'
@@ -33,27 +33,6 @@ def extract_qr_code_data(image_path):
     except Exception as e:
         print(f"Error extracting QR code data from {image_path}: {e}")
         return None
-
-def activate_camera(image_path):
-    picam2 = Picamera2()
-    camera_config = picam2.create_still_configuration(
-        main={"size": (1920, 1080)},
-        lores={"size": (640, 480)},
-        display="lores"
-    )
-
-    try:
-        picam2.configure(camera_config)
-        picam2.start_preview(Preview.QTGL)
-        picam2.start()
-        time.sleep(2)
-        picam2.capture_file(image_path)
-        picam2.stop_preview()
-        picam2.close()
-        print(f"Image captured successfully at {image_path}")
-    except Exception as e:
-        print(f"Failed to capture image: {e}")
-        picam2.close()
 
 def dispense_drink():
     print("Starting DC motor...")
