@@ -21,8 +21,6 @@ from hal import hal_accelerometer as accel
 shared_keypad_queue = queue.Queue()
 
 
-
-
 #Call back function invoked when any key on keypad is pressed
 def key_pressed(key):
     shared_keypad_queue.put(key)
