@@ -77,29 +77,40 @@ def handle_user_selection(lcd):
                 lcd.lcd_display_string(line1, 1, 0)
                 lcd.lcd_display_string(line2, 2, 0)
                 update_display_state(line1, line2)
-                time.sleep(2)  # Buffer time for user to select drink
 
-                if not shared_keypad_queue.empty():
-                    keyvalue = shared_keypad_queue.get()
-                    print(f"Drink Option Key value: {keyvalue}")
+                # Wait for user to make a valid selection
+                while True:
+                    if lcd_low_power_mode_event.is_set():
+                        # Do nothing if the LCD is in low power mode
+                        print("LCD is in low power mode. Ignoring key press.")
+                        continue
 
-                    if keyvalue == 1:
-                        lcd.lcd_clear()
-                        line1 = "Milo Selected"
-                        line2 = ""
-                        lcd.lcd_display_string(line1, 1, 0)
-                        update_display_state(line1, line2)
-                        time.sleep(3)
-                        hog_main()
-                    elif keyvalue == 2:
-                        lcd.lcd_clear()
-                        line1 = "100 Plus"
-                        line2 = "Selected"
-                        lcd.lcd_display_string(line1, 1, 0)
-                        lcd.lcd_display_string(line2, 2, 0)
-                        update_display_state(line1, line2)
-                        time.sleep(3)
-                        hog_main()
+                    if not shared_keypad_queue.empty():
+                        drink_keyvalue = shared_keypad_queue.get()
+                        lcd_on_event.set()
+                        print(f"Drink Option Key value: {drink_keyvalue}")
+
+                        if drink_keyvalue == 1:
+                            lcd.lcd_clear()
+                            line1 = "Milo Selected"
+                            line2 = ""
+                            lcd.lcd_display_string(line1, 1, 0)
+                            update_display_state(line1, line2)
+                            time.sleep(3)
+                            hog_main()
+                            break  # Exit the drink selection loop
+
+                        elif drink_keyvalue == 2:
+                            lcd.lcd_clear()
+                            line1 = "100 Plus"
+                            line2 = "Selected"
+                            lcd.lcd_display_string(line1, 1, 0)
+                            lcd.lcd_display_string(line2, 2, 0)
+                            update_display_state(line1, line2)
+                            time.sleep(3)
+                            hog_main()
+                            break  # Exit the drink selection loop
+
                 lcd.lcd_clear()
                 return  # Exit to loop back to main menu
 
@@ -210,15 +221,21 @@ def activate_security(lcd):
         time.sleep(0.1)
 
 def hog_main():
+    global keyvalue
     print("Starting main function")
 
     lcd.lcd_clear()
-    lcd.lcd_display_string("Tap RFID card", 1) 
+    lcd.lcd_display_string("Tap RFID card", 1)
+    keyvalue = None
 
     while True:
         lcd_on_event.set()
         id = reader.read_id_no_block()
         id = str(id)
+        
+        if not shared_keypad_queue.empty():
+            keyvalue = shared_keypad_queue.get()
+            print(keyvalue)
                     
         if id != "None":
             print("RFID card ID = " + id)
@@ -236,18 +253,45 @@ def hog_main():
                 lcd.lcd_clear()
                 lcd.lcd_display_string("Payment Success", 1)
                 led.set_output(0, 1)  # Turn on LED to indicate success
-                time.sleep(5)  # Keep the message for 5 seconds
+                time.sleep(1)
+                dispense_drink()
+                
+                # Turn off the LED after dispensing the drink
+                led.set_output(0, 0)  # Ensure LED is off
                 break
             else:
                 print("Payment failed.")
                 lcd.lcd_clear()
                 lcd.lcd_display_string("Payment Failed", 1)
                 led.set_output(0, 0)  # Ensure LED is off
-                time.sleep(5)  # Keep the message for 5 seconds
+                time.sleep(5)
+        
+        elif keyvalue == 0:
+            # reset button
+            lcd.lcd_clear()
+            lcd.lcd_display_string("Resetting...", 1)
+            led.set_output(0, 0)  # Ensure LED is off
+            time.sleep(3)
+            lcd.lcd_clear()
+            return
 
         else:
             print("Invalid payment method. Restarting...")
             continue
+        led.set_output(0, 1)
+        time.sleep(0.1)
+
+def dispense_drink():
+    print("Starting DC motor...")
+    dc_motor.set_motor_speed(50)  # Set motor speed to 50%
+    time.sleep(5)  # Run motor for 5 seconds
+    dc_motor.set_motor_speed(0)
+
+    print("Dispensing purchased drink with servo...")
+    servo.set_servo_position(0)  # Move servo to 0 degrees
+    time.sleep(2)  # Wait for 2 seconds
+    servo.set_servo_position(180)  # Move servo to 180 degrees
+    time.sleep(2)  # Wait for 2 seconds
 
 def monitor_accelerometer(simulated_data=None):
     accelerometer = acc.init()
@@ -302,5 +346,6 @@ if __name__ == "__main__":
     ir_sensor.init()
     servo.init()
     acc.init()
+    dc_motor.init()
     
     main_menu_flow(lcd, keypad)
