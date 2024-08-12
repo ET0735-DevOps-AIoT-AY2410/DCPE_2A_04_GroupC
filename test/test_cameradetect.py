@@ -4,7 +4,8 @@ import qrcode
 import os
 
 # Define paths
-images_dir = "images"
+src_dir = os.path.join(os.getcwd(), "src")
+images_dir = os.path.join(src_dir, "images")
 qr_image_path = os.path.join(images_dir, "qr-code.jpg")
 
 def qr_generate(image_path):

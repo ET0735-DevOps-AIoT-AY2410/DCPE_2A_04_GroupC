@@ -10,8 +10,8 @@ from camera_module import activate_camera
 scan_image_path = r'/home/pi/ET0735/CA/src/scan.jpg'
 pay_image_path = r'/home/pi/ET0735/CA/src/pay.jpg'
 font_path = r"/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-collection_reference_image_path = r"/home/pi/ET0735/CA/src/qr-img.jpg"
-payment_reference_image_path = r"/home/pi/ET0735/CA/src/qr-pay.jpg"
+collection_reference_image_path = r"/home/pi/ET0735/CA/src/images/qr-img.jpg"
+payment_reference_image_path = r"/home/pi/ET0735/CA/src/images/qr-pay.jpg"
 
 lcd = LCD.lcd()
 
@@ -63,7 +63,7 @@ def qr_code_detection(scan_image_path, font_path, reference_codes):
         if not decoded_objects:
             print("No QR code detected.")
             img.show()
-            return False
+            return None
 
         for d in decoded_objects:
             print(f"Decoded Data: {d.data.decode()}")
@@ -81,20 +81,20 @@ def qr_code_detection(scan_image_path, font_path, reference_codes):
             data = d.data.decode()
             if data in reference_codes:
                 print(f"Valid QR Code Detected: {data}")
-                return True
+                return data  # Return the valid QR code data immediately
             else:
                 print(f"Invalid QR Code Detected: {data}")
 
         print("No valid QR code detected. Please try again.")
         img.show()
-        return False
+        return None
         
     except OSError as e:
         print(f"Error: {e}")
-        return False
+        return None
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-        return False
+        return None
 
 def pay_dispense(pay_image_path, font_path, reference_codes):
     activate_camera(pay_image_path)
@@ -120,16 +120,25 @@ def main():
 
     if collection_reference_code and payment_reference_code:
         reference_codes = [collection_reference_code, payment_reference_code]
-        
+
+        start_time = time.time()
         while True:
+            elapsed_time = time.time() - start_time
+            if elapsed_time > 30:
+                lcd.lcd_clear()
+                lcd.lcd_display_string("Timeout!", 1)
+                print("Time exceeded 30 seconds. Stopping scan.")
+                break
+
             lcd.lcd_clear()
             lcd.lcd_display_string("Camera Activated", 1)
             activate_camera(scan_image_path)
-            if qr_code_detection(scan_image_path, font_path, reference_codes):
+            detected_code = qr_code_detection(scan_image_path, font_path, reference_codes)
+            if detected_code:
                 lcd.lcd_clear()
                 lcd.lcd_display_string("Dispensing drink...", 1)
                 lcd.lcd_display_string("Please wait...", 2)
-                print("Valid QR code detected. Proceeding to dispense...")
+                print(f"Valid QR code detected: {detected_code}. Proceeding to dispense...")
                 pay_dispense(pay_image_path, font_path, reference_codes)
                 break
             else:
